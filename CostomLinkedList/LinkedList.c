@@ -13,12 +13,16 @@ struct Node {
 void add(LinkedList** list, int value);
 void removeValue(LinkedList** list, int value);
 int contains(LinkedList** list, int value);
+int count(LinkedList** list);
+int* toArray(LinkedList** list);
 
 struct LinkedList {
 	Node* head;
 	void (*add)(LinkedList** list, int);
 	void (*removeValue)(LinkedList** list, int);
 	int (*contains)(LinkedList** list, int value);
+	int (*count)(LinkedList** link);
+	int* (*toArray)(LinkedList** list);
 };
 
 int main() {
@@ -27,36 +31,9 @@ int main() {
 	list->add = &add;
 	list->removeValue = &removeValue;
 	list->contains = &contains;
+	list->count = &count;
+	list->toArray = &toArray;
 
-	list->add(&list, 5);
-
-	list->removeValue(&list, 5);
-
-	list->add(&list, 10);
-
-	if (list->contains(&list, 10)) {
-		printf("Has 10");
-	}
-
-
-	if (list->contains(&list, 11)) {
-		printf("Has 11");
-	}
-	list->add(&list, 15);
-
-
-	if (list->contains(&list, 15)) {
-		printf("Has 15");
-	}
-
-	list->removeValue(&list, 15);
-	list->removeValue(&list, 10);
-	list->removeValue(&list, 14);
-
-
-	if (list->contains(&list, 10)) {
-		printf("Has 10");
-	}
 
 	return 0;
 }
@@ -107,13 +84,40 @@ void removeValue(LinkedList** list, int value) {
 int contains(LinkedList** list, int value) {
 	Node* temp = list[0]->head;
 
-	while (temp != NULL && temp->value != value) {
+	while (temp != NULL && temp->value != value)
 		temp = temp->next;
-	}
 
-	if (temp == NULL) {
+	if (temp == NULL)
 		return 0;
-	}
 
 	return temp->value == value;
+}
+
+int count(LinkedList** list) {
+	int count = 0;
+
+	Node* current = list[0]->head;
+
+	while (current != NULL) {
+		current = current->next;
+		count++;
+	}
+
+	return count;
+}
+
+int* toArray(LinkedList** list) {
+	int length = count(&list[0]);
+	int* arr = (int*)malloc(sizeof(int) * length);
+	Node* current = list[0]->head;
+
+	int index = 0;
+
+	while (current != NULL) {
+		arr[index] = current->value;
+		index++;
+		current = current->next;
+	}
+
+	return arr;
 }
