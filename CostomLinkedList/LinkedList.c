@@ -49,6 +49,7 @@ int main() {
 	list->add(&list, 4);
 	list->add(&list, 2);
 	list->removeValue(&list, 2);
+	
 	int first = list->getFirst(&list);
 	int last = list->getLast(&list);
 
