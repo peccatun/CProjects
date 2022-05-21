@@ -10,12 +10,6 @@ struct Node {
 	Node* next;
 };
 
-void add(LinkedList** list, int value);
-void removeValue(LinkedList** list, int value);
-int contains(LinkedList** list, int value);
-int count(LinkedList** list);
-int* toArray(LinkedList** list);
-
 struct LinkedList {
 	Node* head;
 	void (*add)(LinkedList** list, int);
@@ -23,7 +17,18 @@ struct LinkedList {
 	int (*contains)(LinkedList** list, int value);
 	int (*count)(LinkedList** link);
 	int* (*toArray)(LinkedList** list);
+	int (*getFirst)(LinkedList** list);
+	int (*getLast)(LinkedList** list);
+
 };
+
+void add(LinkedList** list, int value);
+void removeValue(LinkedList** list, int value);
+int contains(LinkedList** list, int value);
+int count(LinkedList** list);
+int* toArray(LinkedList** list);
+int getFirst(LinkedList** list);
+int getLast(LinkedList** list);
 
 int main() {
 	LinkedList* list = (LinkedList*)malloc(sizeof(LinkedList));
@@ -33,7 +38,23 @@ int main() {
 	list->contains = &contains;
 	list->count = &count;
 	list->toArray = &toArray;
+	list->getFirst = &getFirst;
+	list->getLast = &getLast;
 
+
+	list->add(&list, 10);
+	list->add(&list, 24);
+	list->add(&list, 45);
+	list->add(&list, 12);
+	list->add(&list, 4);
+	list->add(&list, 2);
+	list->removeValue(&list, 2);
+	int first = list->getFirst(&list);
+	int last = list->getLast(&list);
+
+
+	printf("first: %d", first);
+	printf(" last: %d", last);
 
 	return 0;
 }
@@ -120,4 +141,25 @@ int* toArray(LinkedList** list) {
 	}
 
 	return arr;
+}
+
+int getFirst(LinkedList** list) {
+	Node* current = list[0]->head;
+
+	if (current == NULL)
+		return 0;
+
+	return current->value;
+}
+
+int getLast(LinkedList** list) {
+	Node* current = list[0]->head;
+
+	if (current == NULL)
+		return 0;
+
+	while (current->next != NULL)
+		current = current->next;
+	
+	return current->value;
 }
