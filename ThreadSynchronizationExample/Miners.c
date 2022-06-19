@@ -10,6 +10,9 @@ const int BASE_START_SUM_GOLD = 0;
 const int BASE_START_FARM_COUNT = 0;
 const int FARM_COST = 50;
 const int FARM_MAX_COUNT = 20;
+const int MINER_CARRY_CAPACITY = 10;
+const int FARM_BUILD_TIME = 2;
+const int WORKER_TRAVEL_TIME = 1;
 
 
 typedef struct Base{
@@ -96,10 +99,14 @@ void* work(void *data){
 	WorkData* workData = (WorkData*)data;
 	
 	while(workData->mine->currentGold > 0){
-		int goldForWorker = 10;
+		int goldForWorker = MINER_CARRY_CAPACITY;
 
 		pthread_mutex_lock(&lock);
 		printf("Worker %d entered mine 1 \n", workData->miner->number);
+		if(workData->mine->currentGold <= 0){
+			pthread_mutex_unlock(&lock);
+			break;
+		}
 		if(workData->mine->currentGold <= 10 && workData->mine->currentGold > 0){
 			goldForWorker = workData->mine->currentGold;
 		}
@@ -108,7 +115,7 @@ void* work(void *data){
 		workData->miner->currentGold += goldForWorker;
 
 		pthread_mutex_unlock(&lock);
-		sleep(1);
+		sleep(WORKER_TRAVEL_TIME);
 		printf("Worker %d depositing \n", workData->miner->number);
 		workData->base->currentGold += workData->miner->currentGold;
 		workData->base->sumGold += workData->miner->currentGold;
@@ -152,7 +159,7 @@ void* buildFarm(void *data){
 			base->currentGold -= FARM_COST;
 
 			pthread_mutex_unlock(&lock);
-			sleep(2);
+			sleep(FARM_BUILD_TIME);
 			base->farmCount += 1;
 			printf("Farm %d created\n", base->farmCount);
 		}
